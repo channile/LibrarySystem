@@ -210,8 +210,9 @@ void MainWindow::updateTablewidget(){
     /*Book ( id int primary key , name varchar(50) , public int , input int "
                        ", price double , is_stock int, stock_user varchar(30))*/
 
-    QSqlQuery query;
-    if(query.exec("select * from Book")){
+    QSqlQuery query_user,query_book;
+
+    if(query_book.exec("select * from Book")){
         ui->tableWidget->clearContents();
         ui->tableWidget->setRowCount(0);
         ui->tableWidget->setColumnCount(4);
@@ -221,7 +222,7 @@ void MainWindow::updateTablewidget(){
         ui->tableWidget->setHorizontalHeaderLabels(header);
         ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
 
-        while (query.next()) {
+        while (query_book.next()) {
             int rowCount1 = ui->tableWidget->rowCount();
 //            qDebug()<<rowCount1;
             ui->tableWidget->insertRow(rowCount1);
@@ -230,13 +231,13 @@ void MainWindow::updateTablewidget(){
 //            qDebug()<<info;
 
             QTableWidgetItem *book_columnItem0 = new QTableWidgetItem(
-                                        query.value(1).toString());
+                                        query_book.value(1).toString());
             QTableWidgetItem *book_columnItem1 = new QTableWidgetItem(
-                                        query.value(2).toString());
+                                        query_book.value(2).toString());
             QTableWidgetItem *book_columnItem2 = new QTableWidgetItem(
-                                        query.value(4).toString());
+                                        query_book.value(4).toString());
 
-            if(query.value(5).toString() == '0'){
+            if(query_book.value(5).toString() == '0'){
                 QTableWidgetItem *book_columnItem3 = new QTableWidgetItem(tr("是"));
 
                 ui->tableWidget->setItem(rowCount1,0,book_columnItem0);
@@ -259,66 +260,111 @@ void MainWindow::updateTablewidget(){
     /*User ( id int primary key , name varchar(30), account varchar(30) "
                        ", password varchar(30) , stock int)*/
 
-    if(query.exec("select * from User")){
-        ui->tableWidget_2->clearContents();
-        ui->tableWidget_2->setRowCount(0);
+
+//    if(query_user.exec("select * from User")){
+//        ui->tableWidget_2->clearContents();
+//        ui->tableWidget_2->setRowCount(0);
+
         if(user_type == ADMIN){
+            ui->tableWidget_2->setColumnCount(6);
+            QStringList header;
+            header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("密码")<<tr("已借书籍")<<tr("已借书籍");
+            ui->tableWidget_2->setHorizontalHeaderLabels(header);
+            ui->tableWidget_2->horizontalHeader()->setStretchLastSection(true);
+
+            query_user.exec("select * from User");
+
+            while (query_user.next()) {
+                int rowCount = ui->tableWidget_2->rowCount();
+
+                ui->tableWidget_2->insertRow(rowCount);
+
+                QTableWidgetItem *AUserItem0 = new QTableWidgetItem(
+                                            query_user.value(0).toString());
+                QTableWidgetItem *AUserItem1 = new QTableWidgetItem(
+                                            query_user.value(1).toString());
+                QTableWidgetItem *AUserItem2 = new QTableWidgetItem(
+                                            query_user.value(2).toString());
+                QTableWidgetItem *AUserItem3 = new QTableWidgetItem(
+                                            query_user.value(3).toString());
+
+                ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
+                ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
+                ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
+                ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
+
+                QString UserAcc = query_user.value(2).toString();
+
+                int num = 4;
+
+                query_book.exec("select name from Book where stock_user = '"+UserAcc+"'");
+
+                while (query_book.next()) {
+
+                    QTableWidgetItem *bn = new QTableWidgetItem(query_book.value(0).toString());
+
+
+                    ui->tableWidget_2->setItem(rowCount,num,bn);
+
+                    num++;
+                }
+
+//                ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
+//                ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
+//                ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
+//                ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
+//                ui->tableWidget_2->setItem(rowCount,4,AUserItem4);
+
+            }
+        } else if(user_type == USER){
             ui->tableWidget_2->setColumnCount(5);
             QStringList header;
-            header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("密码")<<tr("已借书籍");
+            header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("已借书籍")<<tr("已借书籍");
             ui->tableWidget_2->setHorizontalHeaderLabels(header);
             ui->tableWidget_2->horizontalHeader()->setStretchLastSection(true);
 
-            while (query.next()) {
+            query_user.exec("select * from User where account = '"+ACCOUNT+"'");
+
+            while (query_user.next()) {
                 int rowCount = ui->tableWidget_2->rowCount();
 
                 ui->tableWidget_2->insertRow(rowCount);
 
                 QTableWidgetItem *AUserItem0 = new QTableWidgetItem(
-                                            query.value(0).toString());
+                                            query_user.value(0).toString());
                 QTableWidgetItem *AUserItem1 = new QTableWidgetItem(
-                                            query.value(1).toString());
+                                            query_user.value(1).toString());
                 QTableWidgetItem *AUserItem2 = new QTableWidgetItem(
-                                            query.value(2).toString());
-                QTableWidgetItem *AUserItem3 = new QTableWidgetItem(
-                                            query.value(3).toString());
-                QTableWidgetItem *AUserItem4 = new QTableWidgetItem(
-                                            query.value(4).toString());
+                                            query_user.value(2).toString());
 
                 ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
                 ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
                 ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
-                ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
-                ui->tableWidget_2->setItem(rowCount,4,AUserItem4);
+
+                QString UserAcc = query_user.value(2).toString();
+
+                int i = 3;
+
+                query_book.exec("select name from Book where stock_user = '"+UserAcc+"'");
+
+                while (query_book.next()) {
+
+                    QTableWidgetItem *bn = new QTableWidgetItem(query_book.value(0).toString());
+
+                    ui->tableWidget_2->setItem(rowCount,i,bn);
+                    i++;
+
+//                ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
+//                ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
+//                ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
+//                ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
+
+                }
+
             }
-        } else {
-            ui->tableWidget_2->setColumnCount(4);
-            QStringList header;
-            header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("已借书籍");
-            ui->tableWidget_2->setHorizontalHeaderLabels(header);
-            ui->tableWidget_2->horizontalHeader()->setStretchLastSection(true);
-
-            while (query.next()) {
-                int rowCount = ui->tableWidget_2->rowCount();
-
-                ui->tableWidget_2->insertRow(rowCount);
-
-                QTableWidgetItem *AUserItem0 = new QTableWidgetItem(
-                                            query.value(0).toString());
-                QTableWidgetItem *AUserItem1 = new QTableWidgetItem(
-                                            query.value(1).toString());
-                QTableWidgetItem *AUserItem2 = new QTableWidgetItem(
-                                            query.value(2).toString());
-                QTableWidgetItem *AUserItem3 = new QTableWidgetItem(
-                                            query.value(4).toString());
-
-                ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
-                ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
-                ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
-                ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
-            }
+        }else {
+            ui->tableWidget_2->clear();
         }
-    }
 
 }
 
@@ -390,11 +436,15 @@ void MainWindow::on_logout_button_clicked()
     user_type = VISTOR;
     uiupdate();
     ACCOUNT = "";
+    ui->account_edit->clear();
+    ui->password_edit->clear();
+    ui->checkBox->setCheckState(Qt::Unchecked);
 }
 
 void MainWindow::on_refresh_button_clicked()
 {
     uiupdate();
+    updateTablewidget();
     ui->book_lineEdit->setText("");
 }
 
