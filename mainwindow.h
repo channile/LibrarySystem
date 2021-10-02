@@ -27,7 +27,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QString str_account,str_password;
+    QString str_account,str_password,User_name,ACCOUNT;
     int maxid;
     int user_type;
     enum{USER,ADMIN,VISTOR};
@@ -51,6 +51,12 @@ private slots:
     void updateTablewidget();
 
     void on_check_button_clicked();
+
+    void on_logout_button_clicked();
+
+    void on_refresh_button_clicked();
+
+    void on_bor_button_clicked();
 
 private:
     Ui::MainWindow *ui;
