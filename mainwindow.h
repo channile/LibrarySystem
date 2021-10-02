@@ -58,6 +58,8 @@ private slots:
 
     void on_bor_button_clicked();
 
+    void on_retire_button_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -334,6 +334,7 @@ void MainWindow::on_check_button_clicked()
     if(!query.isActive()){
         QMessageBox::critical(NULL, "Error", "该书籍不存在",
                           QMessageBox::Yes);
+        return;
     }
 
     ui->tableWidget->clearContents();
@@ -388,6 +389,7 @@ void MainWindow::on_logout_button_clicked()
 {
     user_type = VISTOR;
     uiupdate();
+    ACCOUNT = "";
 }
 
 void MainWindow::on_refresh_button_clicked()
@@ -416,7 +418,7 @@ void MainWindow::on_bor_button_clicked()
         query_user.exec("select stock from User where account = '"+ACCOUNT+"'");
         query_user.next();
         UserStock = query_user.value(0).toInt();
-        qDebug()<<UserStock;
+//        qDebug()<<UserStock;
         if(UserStock < 2){
 
             QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
@@ -428,7 +430,7 @@ void MainWindow::on_bor_button_clicked()
 //                qDebug()<<row;
                 QTableWidgetItem *item = ui->tableWidget->item(row,0);
                 book_name = item->text();
-                qDebug()<<book_name;
+//                qDebug()<<book_name;
             }
 
             qDebug()<<query_book.exec("select is_stock from Book where name = '"+book_name+"'");
@@ -447,6 +449,7 @@ void MainWindow::on_bor_button_clicked()
                         query_user.exec("update User set stock = stock + 1 where account = '"+ACCOUNT+"'")){
                         QMessageBox::information(NULL, "提示", "借阅成功",
                                               QMessageBox::Yes);
+                        updateTablewidget();
                      }
                  }
             }
@@ -454,6 +457,64 @@ void MainWindow::on_bor_button_clicked()
         }else{
             QMessageBox::information(NULL, "提示", "借阅书籍已达上限",
                                   QMessageBox::Yes);
+            return;
+        }
+    }
+}
+
+void MainWindow::on_retire_button_clicked()
+{
+    int UserStock = 0;
+    int row;
+
+    QSqlQuery query_user,query_book;
+    QString book_name,user_name;
+
+    if(user_type == VISTOR){
+        QMessageBox::information(NULL, "提示", "请先登陆",
+                          QMessageBox::Yes);
+        return;
+    } else if (user_type == ADMIN) {
+        QMessageBox::information(NULL, "提示", "管理员不要捣乱",
+                          QMessageBox::Yes);
+        return;
+    } else {
+        query_user.exec("select stock from User where account = '"+ACCOUNT+"'");
+        query_user.next();
+        UserStock = query_user.value(0).toInt();
+
+        if(UserStock == 0){
+            QMessageBox::information(NULL, "提示", "没有需要退还的书籍",
+                                  QMessageBox::Yes);
+//            return;
+        } else {
+            QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
+            int count = items.count();
+
+            for(int i = 0; i < count; i++)
+            {
+                row = ui->tableWidget->row(items.at(i));
+//                qDebug()<<row;
+                QTableWidgetItem *item = ui->tableWidget->item(row,0);
+                book_name = item->text();
+//                qDebug()<<book_name;
+
+                query_book.exec("select stock_user from Book where name = '"+book_name+"'");
+                if(query_book.next()){
+                    user_name = query_book.value(0).toString();
+//                    qDebug()<<user_name;
+                    if(ACCOUNT == user_name){
+                        query_book.exec("update Book set is_stock = 0,"
+                                        " stock_user = NULL where stock_user = '"+ACCOUNT+"'"
+                                                     " AND name = '"+book_name+"'");
+                        query_user.exec("update User set stock = stock - 1 "
+                                        "where account = '"+ACCOUNT+"'");
+                        QMessageBox::information(NULL, "提示", "书籍退还完成",
+                                              QMessageBox::Yes);
+                        updateTablewidget();
+                    }
+                }
+            }
         }
     }
 }
