@@ -22,6 +22,8 @@ public slots:
     //点击信号响应槽
     void slotClicked();
 
+//    void thisHide();
+
 protected:
     void mousePressEvent(QMouseEvent* event);
 

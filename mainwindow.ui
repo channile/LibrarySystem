@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1083</width>
-    <height>542</height>
+    <width>1267</width>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
    <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>240</y>
+      <x>170</x>
+      <y>230</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -45,12 +45,12 @@
      <rect>
       <x>290</x>
       <y>20</y>
-      <width>771</width>
-      <height>491</height>
+      <width>961</width>
+      <height>631</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="widget">
      <attribute name="title">
@@ -60,18 +60,18 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>110</y>
-        <width>741</width>
-        <height>341</height>
+        <y>120</y>
+        <width>941</width>
+        <height>471</height>
        </rect>
       </property>
      </widget>
      <widget class="QWidget" name="horizontalLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>-1</x>
         <y>10</y>
-        <width>741</width>
+        <width>961</width>
         <height>96</height>
        </rect>
       </property>
@@ -102,7 +102,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="check_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -118,7 +118,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_9">
+        <widget class="QPushButton" name="bor_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -126,12 +126,12 @@
           </size>
          </property>
          <property name="text">
-          <string> 查询</string>
+          <string>借阅</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_7">
+        <widget class="QPushButton" name="retire_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -139,12 +139,12 @@
           </size>
          </property>
          <property name="text">
-          <string> 查询</string>
+          <string>退借</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_10">
+        <widget class="QPushButton" name="add_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -152,12 +152,12 @@
           </size>
          </property>
          <property name="text">
-          <string> 查询</string>
+          <string>增加</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_11">
+        <widget class="QPushButton" name="del_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -165,12 +165,12 @@
           </size>
          </property>
          <property name="text">
-          <string> 查询</string>
+          <string>删除</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_6">
+        <widget class="QPushButton" name="edit_button">
          <property name="minimumSize">
           <size>
            <width>24</width>
@@ -178,23 +178,7 @@
           </size>
          </property>
          <property name="text">
-          <string> 查询</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_12">
-         <property name="minimumSize">
-          <size>
-           <width>24</width>
-           <height>52</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>查询</string>
+          <string>修改</string>
          </property>
         </widget>
        </item>
@@ -205,6 +189,108 @@
      <attribute name="title">
       <string>用户信息</string>
      </attribute>
+     <widget class="QTableWidget" name="tableWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>941</width>
+        <height>471</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="horizontalLayoutWidget_4">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>961</width>
+        <height>96</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinAndMaxSize</enum>
+       </property>
+       <property name="leftMargin">
+        <number>8</number>
+       </property>
+       <property name="topMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+       <property name="bottomMargin">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QPlainTextEdit" name="plainTextEdit_2">
+         <property name="minimumSize">
+          <size>
+           <width>88</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="check_button_2">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>52</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>查询</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="add_button_2">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>52</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>增加</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="del_button_2">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>52</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>删除</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="edit_button_2">
+         <property name="minimumSize">
+          <size>
+           <width>24</width>
+           <height>52</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>修改</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">

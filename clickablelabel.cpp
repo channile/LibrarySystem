@@ -20,11 +20,11 @@ void ClickableLabel::slotClicked(){
     registerwidget *pic = new registerwidget();
     pic->show();
     QSqlQuery query;
-    maxid = query.exec("select max(id) from User");
-    int count = maxid;
-    if(count < maxid){
-        this->hide();
-    }
+//    maxid = query.exec("select max(id) from User");
+//    int count = maxid;
+//    if(count < maxid){
+//        this->hide();
+//    }
 }
 
 void ClickableLabel::mousePressEvent(QMouseEvent *event){

@@ -30,6 +30,8 @@ public:
     QString str_account,str_password;
     int maxid;
     int user_type;
+    enum{USER,ADMIN,VISTOR};
+//    ClickableLabel *rLabel;
 
 private slots:
     void on_pushButton_clicked();
@@ -45,6 +47,10 @@ private slots:
     void AdminLogin();
 
     void uiupdate();
+
+    void updateTablewidget();
+
+    void on_check_button_clicked();
 
 private:
     Ui::MainWindow *ui;
