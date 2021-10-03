@@ -28,6 +28,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->name_label->hide();
     ui->UEdit_button->hide();
     ui->logout_button->hide();
+    ui->check_button_2->hide();
+    ui->add_button_2->hide();
+    ui->del_button_2->hide();
+    ui->edit_button_2->hide();
+    ui->lineEdit->hide();
 }
 
 MainWindow::~MainWindow()
@@ -55,7 +60,7 @@ void MainWindow::on_pushButton_clicked()
 
 bool MainWindow::dbCreat(){
     if(dbConnect()){
-        QSqlDatabase db;
+
         QSqlQuery query;
 
         query.exec("create table Book ( id int primary key , name varchar(50) , public int , input int "
@@ -68,20 +73,16 @@ bool MainWindow::dbCreat(){
 bool MainWindow::dbConnect(){
 
 //    QODBC连接
-    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setHostName("127.0.0.1");
-    db.setPort(3306);
-    db.setDatabaseName("2");
-    db.setUserName("root");
-    db.setPassword("root");
+        QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+        db.setHostName("127.0.0.1");
+        db.setPort(3306);
+        db.setDatabaseName("2"); //改成ODBC的名称
+        db.setUserName("root");
+        db.setPassword("root");
 
     //访问目录内
-//    QSqlDatabase db;
-//    if(QSqlDatabase::contains("qt_sql_default_connection")){
-//        db = QSqlDatabase::database("qt_sql_default_connection");
-//    }else {
-//        db = QSqlDatabase::addDatabase("QSQLITE");
-//    }
+
+//    db = QSqlDatabase::addDatabase("QSQLITE");
 //    db.setDatabaseName("Library.db");
 
 
@@ -169,6 +170,11 @@ void MainWindow::uiupdate(){
             ui->label_2->hide();
             ui->pushButton->hide();
             ui->checkBox->hide();
+            ui->check_button_2->hide();
+            ui->add_button_2->hide();
+            ui->del_button_2->hide();
+            ui->edit_button_2->hide();
+            ui->lineEdit->hide();
             updateTablewidget();
             ui->name_label->raise();
             ui->name_label->show();
@@ -184,6 +190,11 @@ void MainWindow::uiupdate(){
             ui->label_2->hide();
             ui->pushButton->hide();
             ui->checkBox->hide();
+            ui->check_button_2->show();
+            ui->add_button_2->show();
+            ui->del_button_2->show();
+            ui->edit_button_2->show();
+            ui->lineEdit->show();
             updateTablewidget();
             ui->name_label->raise();
             ui->name_label->show();
@@ -202,10 +213,18 @@ void MainWindow::uiupdate(){
             ui->name_label->hide();
             ui->logout_button->hide();
             ui->UEdit_button->hide();
+            ui->check_button_2->hide();
+            ui->add_button_2->hide();
+            ui->del_button_2->hide();
+            ui->edit_button_2->hide();
+            ui->lineEdit->hide();
     }
 }
 
 void MainWindow::updateTablewidget(){
+
+    ui->tableWidget->clear();
+    ui->tableWidget_2->clear();
 
     /*Book ( id int primary key , name varchar(50) , public int , input int "
                        ", price double , is_stock int, stock_user varchar(30))*/
@@ -266,6 +285,8 @@ void MainWindow::updateTablewidget(){
 //        ui->tableWidget_2->setRowCount(0);
 
         if(user_type == ADMIN){
+            ui->tableWidget_2->clearContents();
+            ui->tableWidget_2->setRowCount(0);
             ui->tableWidget_2->setColumnCount(6);
             QStringList header;
             header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("密码")<<tr("已借书籍")<<tr("已借书籍");
@@ -317,6 +338,8 @@ void MainWindow::updateTablewidget(){
 
             }
         } else if(user_type == USER){
+            ui->tableWidget_2->clearContents();
+            ui->tableWidget_2->setRowCount(0);
             ui->tableWidget_2->setColumnCount(5);
             QStringList header;
             header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("已借书籍")<<tr("已借书籍");
@@ -376,7 +399,7 @@ void MainWindow::on_check_button_clicked()
 
     book_name = ui->book_lineEdit->text();
 
-    query.exec("select * from Book where name LIKE '%"+book_name+"%'");
+    query.exec("select * from Book where name LIKE '%"+book_name+"%'"); //bool
     if(!query.isActive()){
         QMessageBox::critical(NULL, "Error", "该书籍不存在",
                           QMessageBox::Yes);
@@ -456,6 +479,7 @@ void MainWindow::on_bor_button_clicked()
     int row;
     int UserStock = 0;
 
+    //判断用户类型
     if(user_type == VISTOR){
         QMessageBox::information(NULL, "提示", "请先登陆",
                           QMessageBox::Yes);
@@ -465,28 +489,34 @@ void MainWindow::on_bor_button_clicked()
                           QMessageBox::Yes);
         return;
     } else {
+        // 获取用户的已借书籍数量
         query_user.exec("select stock from User where account = '"+ACCOUNT+"'");
         query_user.next();
         UserStock = query_user.value(0).toInt();
 //        qDebug()<<UserStock;
-        if(UserStock < 2){
+        if(UserStock < 2){  //每个用户最多借两本书
 
+            //获取Qtablewidget选中的Item
             QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
+            //Item可能有多个，判断
             int count = items.count();
 //            qDebug()<<count;
             for(int i = 0; i < count; i++)
             {
+                //获取选中行
                 row = ui->tableWidget->row(items.at(i));
 //                qDebug()<<row;
+                //获取选中行的第一列 书名
                 QTableWidgetItem *item = ui->tableWidget->item(row,0);
                 book_name = item->text();
 //                qDebug()<<book_name;
             }
 
-            qDebug()<<query_book.exec("select is_stock from Book where name = '"+book_name+"'");
+            //查找BOOK中书为上面选中的书名，获取is_stock
+            query_book.exec("select is_stock from Book where name = '"+book_name+"'");
             if(query_book.next()){
-                qDebug()<<query_book.value(0).toInt();
-                if(query_book.value(0).toInt() == 1){
+                query_book.value(0).toInt();
+                if(query_book.value(0).toInt() == 1){ //如果is_stock = 1
                     QMessageBox::information(NULL, "提示", "该书已被借阅",
                                           QMessageBox::Yes);
                 } else{
@@ -494,6 +524,7 @@ void MainWindow::on_bor_button_clicked()
 //                                         ", stock_user = '"+ACCOUNT+"' where name = '"+book_name+"'");
 //                    qDebug()<<query_user.exec("update User set stock = stock + 1 where account = '"+ACCOUNT+"'");
 
+                    //更新书籍 用户
                      if(query_book.exec("update Book set is_stock = 1,"
                                            " stock_user = '"+ACCOUNT+"' where name = '"+book_name+"'") &&
                         query_user.exec("update User set stock = stock + 1 where account = '"+ACCOUNT+"'")){
@@ -565,6 +596,76 @@ void MainWindow::on_retire_button_clicked()
                     }
                 }
             }
+        }
+    }
+}
+
+void MainWindow::on_check_button_2_clicked()
+{
+    QSqlQuery query_user,query_book;
+    QString editText;
+    QSqlRecord rec;
+
+    editText = ui->lineEdit->text();
+
+    query_user.exec("select * from User where name LIKE '%"+editText+"%'"
+                             "OR account LIKE '%"+editText+"%'"); //bool
+    if(!query_user.isActive()){
+        QMessageBox::critical(NULL, "Error", "该用户不存在",
+                          QMessageBox::Yes);
+        return;
+    }
+
+    ui->tableWidget_2->clearContents();
+    ui->tableWidget_2->setRowCount(0);
+    ui->tableWidget_2->setColumnCount(6);
+
+    QStringList header;
+    header<<tr("id")<<tr("昵称")<<tr("账号")<<tr("密码")<<tr("已借书籍")<<tr("已借书籍");
+    ui->tableWidget_2->setHorizontalHeaderLabels(header);
+    ui->tableWidget_2->horizontalHeader()->setStretchLastSection(true);
+
+    while (query_user.next()) {
+        int rowCount = ui->tableWidget_2->rowCount();
+
+        ui->tableWidget_2->insertRow(rowCount);
+
+        rec = query_user.record();
+
+        int c1 = rec.indexOf("id");
+        int c2 = rec.indexOf("name");
+        int c3 = rec.indexOf("account");
+        int c4 = rec.indexOf("password");
+
+
+        QTableWidgetItem *AUserItem0 = new QTableWidgetItem(
+                                    query_user.value(c1).toString());
+        QTableWidgetItem *AUserItem1 = new QTableWidgetItem(
+                                    query_user.value(c2).toString());
+        QTableWidgetItem *AUserItem2 = new QTableWidgetItem(
+                                    query_user.value(c3).toString());
+        QTableWidgetItem *AUserItem3 = new QTableWidgetItem(
+                                    query_user.value(c4).toString());
+
+        ui->tableWidget_2->setItem(rowCount,0,AUserItem0);
+        ui->tableWidget_2->setItem(rowCount,1,AUserItem1);
+        ui->tableWidget_2->setItem(rowCount,2,AUserItem2);
+        ui->tableWidget_2->setItem(rowCount,3,AUserItem3);
+
+        QString UserAcc = query_user.value(2).toString();
+
+        int num = 4;
+
+        query_book.exec("select name from Book where stock_user = '"+UserAcc+"'");
+
+        while (query_book.next()) {
+
+            QTableWidgetItem *bn = new QTableWidgetItem(query_book.value(0).toString());
+
+
+            ui->tableWidget_2->setItem(rowCount,num,bn);
+
+            num++;
         }
     }
 }

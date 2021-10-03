@@ -32,6 +32,7 @@ public:
     int user_type;
     enum{USER,ADMIN,VISTOR};
 //    ClickableLabel *rLabel;
+    QSqlDatabase db;
 
 private slots:
     void on_pushButton_clicked();
@@ -59,6 +60,8 @@ private slots:
     void on_bor_button_clicked();
 
     void on_retire_button_clicked();
+
+    void on_check_button_2_clicked();
 
 private:
     Ui::MainWindow *ui;
