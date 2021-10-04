@@ -669,3 +669,27 @@ void MainWindow::on_check_button_2_clicked()
         }
     }
 }
+
+void MainWindow::on_add_button_2_clicked()
+{
+    registerwidget *res = new registerwidget();
+    connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    emit sendSignal("ADD");
+    res->show();
+}
+
+void MainWindow::on_edit_button_2_clicked()
+{
+    registerwidget *res = new registerwidget();
+    connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    emit sendSignal("AEDIT"); //管理员修改信号
+    res->show();
+}
+
+void MainWindow::on_UEdit_button_clicked()
+{
+    registerwidget *res = new registerwidget();
+    connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    emit sendSignal("UEDIT"); //用户修改信号
+    res->show();
+}

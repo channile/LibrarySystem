@@ -15,6 +15,9 @@ public:
     explicit registerwidget(QWidget *parent = nullptr);
     ~registerwidget();
 
+public slots:
+    void receiveSignal(QString signal);
+
 private:
     Ui::registerwidget *ui;
 };

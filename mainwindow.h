@@ -63,6 +63,15 @@ private slots:
 
     void on_check_button_2_clicked();
 
+    void on_add_button_2_clicked();
+
+    void on_edit_button_2_clicked();
+
+    void on_UEdit_button_clicked();
+
+signals:
+    void sendSignal(QString);
+
 private:
     Ui::MainWindow *ui;
 };
