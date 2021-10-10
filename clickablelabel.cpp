@@ -18,13 +18,16 @@ ClickableLabel::~ClickableLabel(){
 void ClickableLabel::slotClicked(){
 //    this->hide();
     registerwidget *pic = new registerwidget();
+    connect(this,SIGNAL(sendSignal(QString)),pic,SLOT(receiveSignal(QString)));
+    emit sendSignal("RES");
     pic->show();
-    QSqlQuery query;
-//    maxid = query.exec("select max(id) from User");
-//    int count = maxid;
-//    if(count < maxid){
-//        this->hide();
-//    }
+
+    /*QSqlQuery query;
+    maxid = query.exec("select max(id) from User");
+    int count = maxid;
+    if(count < maxid){
+        this->hide();
+    }*/
 }
 
 void ClickableLabel::mousePressEvent(QMouseEvent *event){

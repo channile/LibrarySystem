@@ -18,6 +18,8 @@ public:
 signals:
     void clicked();
 
+    void sendSignal(QString);
+
 public slots:
     //点击信号响应槽
     void slotClicked();

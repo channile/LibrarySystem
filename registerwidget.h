@@ -2,6 +2,18 @@
 #define REGISTERWIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
+#include <QtSql>
+#include <QSqlDatabase>
+#include <QSqlTableModel>
+#include <QMessageBox>
+#include <QString>
+#include <QSqlError>
+#include <QDateTime>
+#include <QDate>
+#include <QTimer>
+#include <QSqlRecord>
+#include <QSqlQuery>
 
 namespace Ui {
 class registerwidget;
@@ -15,8 +27,14 @@ public:
     explicit registerwidget(QWidget *parent = nullptr);
     ~registerwidget();
 
+    int UTYPE,state;
+    enum{ADMIN,USER,SUCCESS,ERROR};
+
 public slots:
     void receiveSignal(QString signal);
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::registerwidget *ui;

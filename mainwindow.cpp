@@ -33,6 +33,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->del_button_2->hide();
     ui->edit_button_2->hide();
     ui->lineEdit->hide();
+
+    ui->account_edit->setAttribute(Qt::WA_InputMethodEnabled,false);
+    ui->password_edit->setAttribute(Qt::WA_InputMethodEnabled,false);
+    ui->account_edit->setMaxLength(10);
+    ui->password_edit->setMaxLength(15);
 }
 
 MainWindow::~MainWindow()
@@ -64,9 +69,9 @@ bool MainWindow::dbCreat(){
         QSqlQuery query;
 
         query.exec("create table Book ( id int primary key , name varchar(50) , public int , input int "
-                   ", price double , is_stock int, stock_user varchar(30))");
-        query.exec("create table User ( id int primary key , name varchar(30), account varchar(30) "
-                   ", password varchar(30) , stock int)");
+                   ", price double , is_stock int, stock_user varchar(10))");
+        query.exec("create table User ( id int primary key , name varchar(20), account varchar(10) "
+                   ", password varchar(15) , stock int)");
     }
 }
 
@@ -108,7 +113,7 @@ void MainWindow::UserLogin(){
 //        qDebug()<<password;
         if(QString::compare(password,str_password)!=0)
         {
-            QMessageBox::critical(NULL, "Error", "密码错误",
+            QMessageBox::critical(NULL, "提示", "密码错误",
                                   QMessageBox::Yes);
             ui->password_edit->clear();
             return;
@@ -116,7 +121,7 @@ void MainWindow::UserLogin(){
     }
     else
     {
-        QMessageBox::critical(NULL, "Error","该用户不存在",QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::critical(NULL, "提示","该用户不存在",QMessageBox::Yes | QMessageBox::No);
         ui->account_edit->clear();
         ui->password_edit->clear();
         return;
@@ -181,6 +186,8 @@ void MainWindow::uiupdate(){
             ui->name_label->setText("您好，" + User_name);
             ui->logout_button->show();
             ui->UEdit_button->show();
+            ui->account_edit->clear();
+            ui->password_edit->clear();
         break;
         case ADMIN: //管理员
             ui->account_edit->hide();
@@ -200,6 +207,8 @@ void MainWindow::uiupdate(){
             ui->name_label->show();
             ui->name_label->setText("您好，管理员");
             ui->logout_button->show();
+            ui->account_edit->clear();
+            ui->password_edit->clear();
         break;
             case VISTOR:
             ui->account_edit->show();
@@ -218,6 +227,8 @@ void MainWindow::uiupdate(){
             ui->del_button_2->hide();
             ui->edit_button_2->hide();
             ui->lineEdit->hide();
+            ui->account_edit->clear();
+            ui->password_edit->clear();
     }
 }
 
@@ -459,8 +470,7 @@ void MainWindow::on_logout_button_clicked()
     user_type = VISTOR;
     uiupdate();
     ACCOUNT = "";
-    ui->account_edit->clear();
-    ui->password_edit->clear();
+
     ui->checkBox->setCheckState(Qt::Unchecked);
 }
 
@@ -690,6 +700,16 @@ void MainWindow::on_UEdit_button_clicked()
 {
     registerwidget *res = new registerwidget();
     connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
-    emit sendSignal("UEDIT"); //用户修改信号
+    emit sendSignal(ACCOUNT); //用户修改信号
     res->show();
+}
+
+void MainWindow::on_add_button_clicked()
+{
+
+}
+
+void MainWindow::on_edit_button_clicked()
+{
+
 }

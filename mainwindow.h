@@ -69,6 +69,10 @@ private slots:
 
     void on_UEdit_button_clicked();
 
+    void on_add_button_clicked();
+
+    void on_edit_button_clicked();
+
 signals:
     void sendSignal(QString);
 
