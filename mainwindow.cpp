@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->account_edit->setAttribute(Qt::WA_InputMethodEnabled,false);
     ui->password_edit->setAttribute(Qt::WA_InputMethodEnabled,false);
+
     ui->account_edit->setMaxLength(10);
     ui->password_edit->setMaxLength(15);
 }
@@ -51,9 +52,12 @@ void MainWindow::on_pushButton_clicked()
     str_password = ui->password_edit->text();
 
     if(str_account == ""){
-        QMessageBox::critical(NULL, "Error", "请先输入账号",
+        QMessageBox::information(NULL, "Error", "请先输入账号",
                           QMessageBox::Yes);
         return;
+    } else if (str_password == "") {
+        QMessageBox::information(NULL, "提示", "请先输入密码",
+                          QMessageBox::Yes);
     }
 
     if(ui->checkBox->isChecked()){

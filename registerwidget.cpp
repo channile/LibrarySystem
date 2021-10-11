@@ -9,6 +9,10 @@ registerwidget::registerwidget(QWidget *parent) :
     ui->setupUi(this);
     ui->pushButton->setText("注册");
     state = ERROR;
+
+    ui->lineEdit_2->setAttribute(Qt::WA_InputMethodEnabled,false);
+    ui->lineEdit_3->setAttribute(Qt::WA_InputMethodEnabled,false);
+    ui->lineEdit_4->setAttribute(Qt::WA_InputMethodEnabled,false);
 }
 
 registerwidget::~registerwidget()
@@ -60,14 +64,10 @@ void registerwidget::on_pushButton_clicked()
         if(name == ""){
             QMessageBox::information(NULL, "提示", "用户名不能为空",
                               QMessageBox::Yes);
-        }
-
-        if(acc == ""){
+        }else if(acc == ""){
             QMessageBox::information(NULL, "提示", "账号不能为空",
                               QMessageBox::Yes);
-        }
-
-        if(paw == ""){
+        }else if(paw == ""){
             QMessageBox::information(NULL, "提示", "密码不能为空",
                               QMessageBox::Yes);
         }
@@ -105,20 +105,34 @@ void registerwidget::on_pushButton_clicked()
         if(name == ""){
             QMessageBox::information(NULL, "提示", "用户名不能为空",
                               QMessageBox::Yes);
-        }
-
-        if(acc == ""){
+        }else if(acc == ""){
             QMessageBox::information(NULL, "提示", "账号不能为空",
                               QMessageBox::Yes);
+        } else if (paw == "") {
+            QMessageBox::information(NULL, "提示", "密码不能为空",
+                              QMessageBox::Yes);
+        } else if (pawa == "") {
+            QMessageBox::information(NULL, "提示", "验证密码不能为空",
+                              QMessageBox::Yes);
         }
 
-        if(paw != pawa){
-            QMessageBox::information(NULL, "提示", "两次输入密码不相等，请重新输入",
+        if(acc == "admin"){
+            QMessageBox::information(NULL, "提示", "账号不能为管理员账号",
                               QMessageBox::Yes);
-            ui->lineEdit_4->setText("");
+            ui->lineEdit->clear();
+            ui->lineEdit_2->clear();
+            ui->lineEdit_3->clear();
+            ui->lineEdit_4->clear();
         }
 
         if(name != "" && acc != "" && paw != "" && pawa != ""){
+
+            if(paw != pawa){
+                QMessageBox::information(NULL, "提示", "两次输入密码不相等，请重新输入",
+                                  QMessageBox::Yes);
+                ui->lineEdit_3->clear();
+                ui->lineEdit_4->clear();
+            }
 
             query.exec("select account from user where account = '"+acc+"'");
             if(query.next()){
@@ -150,19 +164,16 @@ void registerwidget::on_pushButton_clicked()
         if(name == ""){
             QMessageBox::information(NULL, "提示", "用户名不能为空",
                               QMessageBox::Yes);
-        }
-
-        if(acc == ""){
+        }else if(acc == ""){
             QMessageBox::information(NULL, "提示", "账号不能为空",
                               QMessageBox::Yes);
-        }
-
-        if(paw == ""){
+        }else if(paw == ""){
             QMessageBox::information(NULL, "提示", "密码不能为空",
                               QMessageBox::Yes);
         }
 
         if(name != "" && acc != "" && paw != ""){
+
             if(query.exec("select account from user where account = '"+acc+"'")){
                 if(query.next()){
 
@@ -171,10 +182,13 @@ void registerwidget::on_pushButton_clicked()
                                                QMessageBox::Yes);
                          state = SUCCESS;
                      }
+                 } else {
+                    QMessageBox::information(NULL, "提示", "账号不存在",
+                                      QMessageBox::Yes);
+                    ui->lineEdit->clear();
+                    ui->lineEdit_2->clear();
+                    ui->lineEdit_3->clear();
                  }
-            } else {
-                QMessageBox::information(NULL, "提示", "账号不存在",
-                                  QMessageBox::Yes);
             }
         }
 
@@ -185,13 +199,14 @@ void registerwidget::on_pushButton_clicked()
                                   QMessageBox::Yes);
             }
 
-            if(paw != pawa){
-                QMessageBox::information(NULL, "提示", "两次输入密码不相等，请重新输入",
-                                  QMessageBox::Yes);
-                ui->lineEdit_4->setText("");
-            }
-
             if(name != "" && paw != "" && pawa != ""){
+
+                if(paw != pawa){
+                    QMessageBox::information(NULL, "提示", "两次输入密码不相等，请重新输入",
+                                      QMessageBox::Yes);
+                    ui->lineEdit_4->setText("");
+                }
+
 
                 if(query.next()){
                          if(query.exec("update user set name= '"+name+"',password= '"+paw+"' where account= '"+acc+"' ")){
