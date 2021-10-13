@@ -49,7 +49,7 @@ private slots:
 
     void uiupdate();
 
-    void updateTablewidget();
+//    void updateTablewidget();
 
     void on_check_button_clicked();
 
@@ -73,8 +73,15 @@ private slots:
 
     void on_edit_button_clicked();
 
+    void on_del_button_clicked();
+
+    void on_del_button_2_clicked();
+
 signals:
     void sendSignal(QString);
+
+protected slots:
+    void updateTablewidget();
 
 private:
     Ui::MainWindow *ui;

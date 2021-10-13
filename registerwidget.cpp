@@ -98,6 +98,7 @@ void registerwidget::on_pushButton_clicked()
                 QMessageBox::information(NULL, "提示", "增加成功",
                                                     QMessageBox::Yes);
                 state = SUCCESS;
+                emit updatetw();
             }
         }
     }else if (ui->pushButton->text() == "注册") {
@@ -157,6 +158,7 @@ void registerwidget::on_pushButton_clicked()
                 QMessageBox::information(NULL, "提示", "注册成功",
                                                     QMessageBox::Yes);
                 state = SUCCESS;
+                emit updatetw();
              }
         }
     }else if(UTYPE == ADMIN){
@@ -181,6 +183,7 @@ void registerwidget::on_pushButton_clicked()
                          QMessageBox::information(NULL, "提示", "修改成功",
                                                QMessageBox::Yes);
                          state = SUCCESS;
+                         emit updatetw();
                      }
                  } else {
                     QMessageBox::information(NULL, "提示", "账号不存在",
@@ -213,6 +216,7 @@ void registerwidget::on_pushButton_clicked()
                              QMessageBox::information(NULL, "提示", "修改成功",
                                                QMessageBox::Yes);
                              state = SUCCESS;
+                             emit updatetw();
                          }
                 }
             }

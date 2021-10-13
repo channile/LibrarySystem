@@ -26,6 +26,9 @@ public slots:
 private slots:
     void on_pushButton_clicked();
 
+signals:
+    void updatetw();
+
 private:
     Ui::bookinfo *ui;
 };

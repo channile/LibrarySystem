@@ -79,9 +79,9 @@
      <widget class="QWidget" name="horizontalLayoutWidget_3">
       <property name="geometry">
        <rect>
-        <x>-1</x>
+        <x>9</x>
         <y>10</y>
-        <width>961</width>
+        <width>931</width>
         <height>102</height>
        </rect>
       </property>
@@ -263,9 +263,9 @@
      <widget class="QWidget" name="horizontalLayoutWidget_4">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>10</y>
-        <width>961</width>
+        <width>941</width>
         <height>96</height>
        </rect>
       </property>
@@ -546,7 +546,7 @@
         </font>
        </property>
        <property name="text">
-        <string> 注销</string>
+        <string>注销</string>
        </property>
       </widget>
      </item>

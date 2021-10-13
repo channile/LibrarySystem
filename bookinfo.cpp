@@ -109,6 +109,8 @@ void bookinfo::on_pushButton_clicked()
                 {
                     QMessageBox::information(NULL, "提示", "增加成功",
                                       QMessageBox::Yes);
+                    emit updatetw();
+                    this->close();
                 }
 
             }else {
@@ -158,6 +160,8 @@ void bookinfo::on_pushButton_clicked()
                     && query.exec("update User set stock = stock - 1 where account = '"+acc+"' ")){
 
                 QMessageBox::information(NULL, "提示", "修改成功",QMessageBox::Yes);
+                emit updatetw();
+                this->close();
 
             }
         }else if(bookname != "" && publicdate != "" && input != "" && price != "" && bor == "是" && boruser != ""){
@@ -178,6 +182,8 @@ void bookinfo::on_pushButton_clicked()
                                         && query.exec("update User set stock = stock-1 where account = '"+acc+"' ")){
                                     QMessageBox::information(NULL, "提示", "修改成功",
                                                       QMessageBox::Yes);
+                                    emit updatetw();
+                                    this->close();
                                 }
                             }
                         }

@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     dbCreat();
     updateTablewidget();
 
-    user_type = VISTOR;
+    user_type = ADMIN;
 
     ui->name_label->setText("");
     ui->name_label->hide();
@@ -689,6 +689,7 @@ void MainWindow::on_add_button_2_clicked()
 {
     registerwidget *res = new registerwidget();
     connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    connect(res,SIGNAL(updatetw()),this,SLOT(updateTablewidget()));
     emit sendSignal("ADD");
     res->show();
 }
@@ -697,6 +698,7 @@ void MainWindow::on_edit_button_2_clicked()
 {
     registerwidget *res = new registerwidget();
     connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    connect(res,SIGNAL(updatetw()),this,SLOT(updateTablewidget()));
     emit sendSignal("AEDIT"); //管理员修改信号
     res->show();
 }
@@ -705,50 +707,146 @@ void MainWindow::on_UEdit_button_clicked()
 {
     registerwidget *res = new registerwidget();
     connect(this,SIGNAL(sendSignal(QString)),res,SLOT(receiveSignal(QString)));
+    connect(res,SIGNAL(updatetw()),this,SLOT(updateTablewidget()));
     emit sendSignal(ACCOUNT); //用户修改信号
     res->show();
 }
 
 void MainWindow::on_add_button_clicked()
 {
-    bookinfo *bif = new bookinfo();
-    connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
-    emit sendSignal("ADD");
-    bif->show();
+    if(user_type == ADMIN){
+        bookinfo *bif = new bookinfo();
+        connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
+        connect(bif,SIGNAL(updatetw()),this,SLOT(updateTablewidget()));
+        emit sendSignal("ADD");
+        bif->show();
+    }else {
+        QMessageBox::information(NULL, "提示", "非管理员无权操作",QMessageBox::Yes);
+        return;
+    }
+
+
 }
 
 void MainWindow::on_edit_button_clicked()
 {
+    if(user_type == ADMIN){
+        bookinfo *bif = new bookinfo();
+        connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
+        connect(bif,SIGNAL(updatetw()),this,SLOT(updateTablewidget()));
 
-    bookinfo *bif = new bookinfo();
-    connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
+        int row;
+        QString bookid,bookname;
+        QSqlQuery query;
 
-    int row;
-    QString bookid,bookname;
+        QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
+        int count = items.count();
+        for(int i = 0; i < count; i++)
+        {
+            //获取选中行
+            row = ui->tableWidget->row(items.at(i));
+    //                qDebug()<<row;
+            //获取选中行的第一列 书名
+            QTableWidgetItem *item = ui->tableWidget->item(row,0);
+            bookname = item->text();
+    //                qDebug()<<book_name;
+        }
+
+        if(query.exec("select id from Book where name = '"+bookname+"'")){
+            if(query.next()){
+                bookid = query.value(0).toString();
+            }
+        }
+
+    //    qDebug()<<bookid;
+
+        emit sendSignal(bookid);
+
+        bif->show();
+    }else {
+        QMessageBox::information(NULL, "提示", "非管理员无权操作",QMessageBox::Yes);
+        return;
+    }
+
+}
+
+void MainWindow::on_del_button_clicked()
+{
+    QSqlQuery query;
+    QString bookname,acc;
+
+    if(user_type == ADMIN){
+        QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
+        if(!items.empty()){
+            int count = items.count(),row;
+            for(int i = 0; i < count; i++){
+                row = ui->tableWidget->row(items.at(i));
+                QTableWidgetItem *item = ui->tableWidget->item(row,0);
+                bookname = item->text();
+            }
+
+                if(query.exec("select is_stock from Book where name = '"+bookname+"'")){
+                    if(query.next()){
+                        if(query.value(0).toInt() == 1){
+                            query.exec("select stock_user from Book where name = '"+bookname+"'");
+                            query.next();
+                            acc = query.value(0).toString();
+                            if(query.exec("update User set stock = stock-1 where account = '"+acc+"' ")){
+                                if(query.exec("delete from Book where name = '"+bookname+"' ")){
+                                    QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
+                                }
+                            }
+                        }
+                    }else {
+                        if(query.exec("delete from Book where name = '"+bookname+"' ")){
+                            QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
+                        }
+                    }
+                }
+        }else {
+            QMessageBox::information(NULL, "提示", "请先选中需要删除的书籍",QMessageBox::Yes);
+            return;
+        }
+    }else {
+        QMessageBox::information(NULL, "提示", "非管理员无权操作",QMessageBox::Yes);
+        return;
+    }
+
+    updateTablewidget();
+}
+
+void MainWindow::on_del_button_2_clicked()
+{
+    QString useracc;
     QSqlQuery query;
 
-    QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
-    int count = items.count();
-    for(int i = 0; i < count; i++)
-    {
-        //获取选中行
-        row = ui->tableWidget->row(items.at(i));
-//                qDebug()<<row;
-        //获取选中行的第一列 书名
-        QTableWidgetItem *item = ui->tableWidget->item(row,0);
-        bookname = item->text();
-//                qDebug()<<book_name;
-    }
-
-    if(query.exec("select id from Book where name = '"+bookname+"'")){
-        if(query.next()){
-            bookid = query.value(0).toString();
+    QList<QTableWidgetItem*> items = ui->tableWidget_2->selectedItems();
+    if(!items.empty()){
+        int count = items.count(),row;
+        for(int i = 0; i < count; i++){
+            row = ui->tableWidget_2->row(items.at(i));
+            QTableWidgetItem *item = ui->tableWidget_2->item(row,2);
+            useracc = item->text();
+//            qDebug()<<useracc;
         }
+
+        if(query.exec("select stock_user from Book where stock_user = '"+useracc+"'")){
+
+            qDebug()<<1;
+            query.exec("update Book set is_stock = 0, stock_user = null where stock_user = '"+useracc+"'");
+            if(query.exec("delete from User where account = '"+useracc+"' ")){
+                QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
+            }
+
+        }else {
+            if(query.exec("delete from User where account = '"+useracc+"' ")){
+                QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
+            }
+        }
+    }else {
+        QMessageBox::information(NULL, "提示", "请先选中需要删除的用户",QMessageBox::Yes);
+        return;
     }
 
-//    qDebug()<<bookid;
-
-    emit sendSignal(bookid);
-
-    bif->show();
+    updateTablewidget();
 }
