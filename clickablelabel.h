@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QWidget>
 #include <Qt>
-#include "registerwidget.h"
 
 class ClickableLabel : public QLabel {
     Q_OBJECT

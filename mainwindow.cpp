@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "clickablelabel.h"
 #include "registerwidget.h"
+#include "bookinfo.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -710,10 +711,44 @@ void MainWindow::on_UEdit_button_clicked()
 
 void MainWindow::on_add_button_clicked()
 {
-
+    bookinfo *bif = new bookinfo();
+    connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
+    emit sendSignal("ADD");
+    bif->show();
 }
 
 void MainWindow::on_edit_button_clicked()
 {
 
+    bookinfo *bif = new bookinfo();
+    connect(this,SIGNAL(sendSignal(QString)),bif,SLOT(receiveSignal(QString)));
+
+    int row;
+    QString bookid,bookname;
+    QSqlQuery query;
+
+    QList<QTableWidgetItem*> items = ui->tableWidget->selectedItems();
+    int count = items.count();
+    for(int i = 0; i < count; i++)
+    {
+        //获取选中行
+        row = ui->tableWidget->row(items.at(i));
+//                qDebug()<<row;
+        //获取选中行的第一列 书名
+        QTableWidgetItem *item = ui->tableWidget->item(row,0);
+        bookname = item->text();
+//                qDebug()<<book_name;
+    }
+
+    if(query.exec("select id from Book where name = '"+bookname+"'")){
+        if(query.next()){
+            bookid = query.value(0).toString();
+        }
+    }
+
+//    qDebug()<<bookid;
+
+    emit sendSignal(bookid);
+
+    bif->show();
 }
