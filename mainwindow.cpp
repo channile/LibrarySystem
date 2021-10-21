@@ -16,14 +16,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     ClickableLabel *rLabel = new ClickableLabel("点击注册>>",this);
     QFont font("Microsoft YaHei", 7, 50, true);
-    rLabel->setGeometry(QRect(110,640,100,20));
+    rLabel->setGeometry(QRect(110,580,100,20));
     rLabel->setFont(font);
     rLabel->setCursor(Qt::PointingHandCursor);
 
     dbCreat();
     updateTablewidget();
 
-    user_type = ADMIN;
+    user_type = VISTOR;
 
     ui->name_label->setText("");
     ui->name_label->hide();
@@ -40,6 +40,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->account_edit->setMaxLength(10);
     ui->password_edit->setMaxLength(15);
+
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableWidget_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableWidget_2->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    ui->sqlite_checkBox->setCheckState(Qt::Checked);
 }
 
 MainWindow::~MainWindow()
@@ -53,12 +60,13 @@ void MainWindow::on_pushButton_clicked()
     str_password = ui->password_edit->text();
 
     if(str_account == ""){
-        QMessageBox::information(NULL, "Error", "请先输入账号",
+        QMessageBox::information(NULL, "提示", "请先输入账号",
                           QMessageBox::Yes);
         return;
     } else if (str_password == "") {
         QMessageBox::information(NULL, "提示", "请先输入密码",
                           QMessageBox::Yes);
+        return;
     }
 
     if(ui->checkBox->isChecked()){
@@ -70,31 +78,37 @@ void MainWindow::on_pushButton_clicked()
 
 bool MainWindow::dbCreat(){
     if(dbConnect()){
-
+//        qDebug()<<true;
         QSqlQuery query;
 
         query.exec("create table Book ( id int primary key , name varchar(50) , public int , input int "
                    ", price double , is_stock int, stock_user varchar(10))");
         query.exec("create table User ( id int primary key , name varchar(20), account varchar(10) "
                    ", password varchar(15) , stock int)");
+
     }
 }
 
 bool MainWindow::dbConnect(){
 
-//    QODBC连接
-        QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+    if(ui->Mysql_checkBox->isChecked()){  //    QODBC连接
+//        QSqlDatabase::removeDatabase("qt_sql_default_connection");
+//        qDebug()<<1;
+
+        db = QSqlDatabase::addDatabase("QODBC");
         db.setHostName("127.0.0.1");
         db.setPort(3306);
         db.setDatabaseName("2"); //改成ODBC的名称
         db.setUserName("root");
         db.setPassword("root");
 
-    //访问目录内
+    }else {   //访问目录内
+//        QSqlDatabase::removeDatabase("qt_sql_default_connection");
 
-//    db = QSqlDatabase::addDatabase("QSQLITE");
-//    db.setDatabaseName("Library.db");
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName(QApplication::applicationDirPath() +"library.db");
 
+    }
 
     if(!db.open())
     {
@@ -118,7 +132,7 @@ void MainWindow::UserLogin(){
 //        qDebug()<<password;
         if(QString::compare(password,str_password)!=0)
         {
-            QMessageBox::critical(NULL, "提示", "密码错误",
+            QMessageBox::information(NULL, "提示", "密码错误",
                                   QMessageBox::Yes);
             ui->password_edit->clear();
             return;
@@ -126,7 +140,7 @@ void MainWindow::UserLogin(){
     }
     else
     {
-        QMessageBox::critical(NULL, "提示","该用户不存在",QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::information(NULL, "提示","该用户不存在",QMessageBox::Yes);
         ui->account_edit->clear();
         ui->password_edit->clear();
         return;
@@ -150,12 +164,12 @@ void MainWindow::AdminLogin(){
         if(str_password == "root"){
 
         }else{
-            QMessageBox::critical(NULL, "Error", "密码错误",
+            QMessageBox::information(NULL, "提示", "密码错误",
                               QMessageBox::Yes);
             return;
         }
     }else{
-        QMessageBox::critical(NULL, "Error", "管理员不存在",
+        QMessageBox::information(NULL, "提示", "管理员不存在",
                               QMessageBox::Yes);
         return;
     }
@@ -163,11 +177,6 @@ void MainWindow::AdminLogin(){
     ACCOUNT = ADMIN;
     user_type=ADMIN;
     uiupdate();
-}
-
-void MainWindow::on_checkBox_stateChanged(int arg1)
-{
-
 }
 
 void MainWindow::uiupdate(){
@@ -415,9 +424,15 @@ void MainWindow::on_check_button_clicked()
 
     book_name = ui->book_lineEdit->text();
 
+    if(book_name == ""){
+        QMessageBox::information(NULL, "提示", "请先输入",
+                          QMessageBox::Yes);
+        return;
+    }
+
     query.exec("select * from Book where name LIKE '%"+book_name+"%'"); //bool
     if(!query.isActive()){
-        QMessageBox::critical(NULL, "Error", "该书籍不存在",
+        QMessageBox::information(NULL, "提示", "该书籍不存在",
                           QMessageBox::Yes);
         return;
     }
@@ -623,10 +638,16 @@ void MainWindow::on_check_button_2_clicked()
 
     editText = ui->lineEdit->text();
 
+    if(editText == ""){
+        QMessageBox::information(NULL, "提示", "请先输入",
+                          QMessageBox::Yes);
+        return;
+    }
+
     query_user.exec("select * from User where name LIKE '%"+editText+"%'"
                              "OR account LIKE '%"+editText+"%'"); //bool
     if(!query_user.isActive()){
-        QMessageBox::critical(NULL, "Error", "该用户不存在",
+        QMessageBox::information(NULL, "提示", "该用户不存在",
                           QMessageBox::Yes);
         return;
     }
@@ -725,7 +746,6 @@ void MainWindow::on_add_button_clicked()
         return;
     }
 
-
 }
 
 void MainWindow::on_edit_button_clicked()
@@ -784,25 +804,26 @@ void MainWindow::on_del_button_clicked()
                 QTableWidgetItem *item = ui->tableWidget->item(row,0);
                 bookname = item->text();
             }
+            qDebug()<<bookname;
 
-                if(query.exec("select is_stock from Book where name = '"+bookname+"'")){
-                    if(query.next()){
-                        if(query.value(0).toInt() == 1){
-                            query.exec("select stock_user from Book where name = '"+bookname+"'");
-                            query.next();
-                            acc = query.value(0).toString();
-                            if(query.exec("update User set stock = stock-1 where account = '"+acc+"' ")){
-                                if(query.exec("delete from Book where name = '"+bookname+"' ")){
-                                    QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
-                                }
-                            }
+                if(query.exec("select stock_user from Book where name = '"+bookname+"'")){
+
+                    query.next();
+                    acc = query.value(0).toString();
+//                    qDebug()<<acc;
+                    if(acc != ""){
+                        if(query.exec("update User set stock = stock-1 where account = '"+acc+"' ") &&
+                                query.exec("delete from Book where name = '"+bookname+"' ")){
+                            QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
                         }
+
                     }else {
                         if(query.exec("delete from Book where name = '"+bookname+"' ")){
                             QMessageBox::information(NULL, "提示", "删除成功",QMessageBox::Yes);
                         }
                     }
                 }
+
         }else {
             QMessageBox::information(NULL, "提示", "请先选中需要删除的书籍",QMessageBox::Yes);
             return;
@@ -849,4 +870,138 @@ void MainWindow::on_del_button_2_clicked()
     }
 
     updateTablewidget();
+}
+
+void MainWindow::on_aboutAction_triggered(){
+    QMessageBox aboutBox;
+    aboutBox.setWindowTitle(tr("关于"));
+    aboutBox.setText("陈嘉乐主导，谢景庭、林浩贤摆烂的图书管理系统");
+    aboutBox.setInformativeText(tr("一个基于qt的图书管理系统。<br><a href=\"https://github.com/channile/LibrarySystem\">项目地址</a>"));
+    aboutBox.exec();
+}
+
+void MainWindow::on_importAction_triggered(){
+    QString bookFile = QFileDialog::getOpenFileName(this,
+                tr("导入图书数据文件"), "./", tr("csv 文件 (*.csv)"));
+    if(bookFile.isEmpty()){
+        return;
+    }
+
+    QFile file(bookFile);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        QMessageBox::information(NULL, "提示", "请先解除文件占用",QMessageBox::Yes);
+        return;
+    }
+
+    QTextStream in(&file);
+    QSqlQuery query;
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+//        qDebug()<<line;
+        QStringList list = line.split(",");
+        if(list.at(0) == "id"){
+            continue;
+        }
+
+        query.exec("select name from Book where name = '"+list.at(1)+"'");
+        if(query.next()){
+            query.exec("update Book set id = '"+list.at(0)+"', public = '"+list.at(2)+"', input  = '"+list.at(3)+"'"
+           ", price = '"+list.at(4)+"', is_stock = '"+list.at(5)+"', stock_user = '"+list.at(6)+"' where name = '"+list.at(1)+"'");
+        }else {
+            query.exec("insert into Book values('"+list.at(0)+"', '"+list.at(1)+"', '"+list.at(2)+"', '"+list.at(3)+"', "
+                                  "'"+list.at(4)+"', '"+list.at(5)+"', '"+list.at(6)+"')");
+        }
+
+    }
+
+    query.exec("update Book set stock_user = NULL where stock_user = ''");
+
+    QMessageBox::information(this, tr("导入数据成功"), tr("信息源文件%1！\n警告！导入后请仔细检查用户与书籍表，否则会"
+                                                    "导致数据不一致！").arg(bookFile), tr("确定"));
+
+    file.close();
+}
+
+void MainWindow::on_exportAction_triggered(){
+    QString filename = QFileDialog::getOpenFileName(this,tr("导出图书数据文件"),qApp->applicationDirPath(),tr("csv 文件 (*.csv)"));
+    if(filename.isEmpty()){
+        return;
+    }
+//    qDebug()<<filename;
+
+    QFile file(filename);
+    QSqlQuery query;
+    QSqlRecord rec;
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::information(NULL, "提示", "请先解除文件占用",QMessageBox::Yes);
+        return;
+    }
+
+    QTextStream out(&file);
+
+    out<<tr("id,")<<tr("书名,")<<tr("出版日期,")<<tr("入库日期,")<<tr("价格,")<<tr("已借，")<<tr("借阅人,")<<",\n";  //表头
+    query.exec("select * from Book");
+    while (query.next()) {
+        rec = query.record();
+
+        int num = rec.indexOf("id");
+        int num1 = rec.indexOf("name");
+        int num2 = rec.indexOf("public");
+        int num3 = rec.indexOf("input");
+        int num4 = rec.indexOf("price");
+        int num5 = rec.indexOf("is_stock");
+        int num6 = rec.indexOf("stock_user");
+
+        out<<tr("%1,").arg(query.value(num).toString())<<tr("%2,").arg(query.value(num1).toString())
+          <<tr("%3,").arg(query.value(num2).toString())<<tr("%4,").arg(query.value(num3).toString())
+         <<tr("%5,").arg(query.value(num4).toString())<<tr("%6,").arg(query.value(num5).toString())
+        <<tr("%7,").arg(query.value(num6).toString())<<"\n";
+    }
+
+    QMessageBox::information(this, tr("导出数据成功"), tr("信息已保存在%1！").arg(filename), tr("确定"));
+
+    file.close();
+
+
+}
+
+void MainWindow::on_Mysql_checkBox_stateChanged(int arg1)
+{
+    qDebug()<<arg1;
+}
+
+void MainWindow::on_sqlite_checkBox_clicked()
+{
+    if(ui->sqlite_checkBox->isChecked()){
+        ui->Mysql_checkBox->setCheckState(Qt::Unchecked);
+    }
+    user_type = VISTOR;
+    QSqlDatabase::removeDatabase("qt_sql_default_connection");
+//    db.close();
+
+    dbCreat();
+    uiupdate();
+}
+
+void MainWindow::on_checkBox_stateChanged(int arg1)
+{
+    qDebug()<<arg1;
+}
+
+void MainWindow::on_Mysql_checkBox_clicked()
+{
+    if(ui->Mysql_checkBox->isChecked()){
+        ui->sqlite_checkBox->setCheckState(Qt::Unchecked);
+
+    }
+    user_type = VISTOR;
+
+    QSqlDatabase::removeDatabase("qt_sql_default_connection");
+//    db.close();
+
+
+    dbCreat();
+    uiupdate();
 }

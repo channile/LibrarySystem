@@ -23,6 +23,7 @@ void bookinfo::receiveSignal(QString signal){
         ui->lineEdit_5->hide();
         ui->label_6->hide();
         ui->lineEdit_6->hide();
+        this->setWindowTitle("增加");
     }else {
 
         id = signal;
@@ -33,6 +34,7 @@ void bookinfo::receiveSignal(QString signal){
         ui->label_6->show();
         ui->lineEdit_5->show();
         ui->lineEdit_6->show();
+        this->setWindowTitle("修改");
 
         if(query.exec("select * from Book where id = '"+signal+"'")){
             if(query.next()){
@@ -166,16 +168,16 @@ void bookinfo::on_pushButton_clicked()
             }
         }else if(bookname != "" && publicdate != "" && input != "" && price != "" && bor == "是" && boruser != ""){
             if(query.exec("select account from User where account = '"+boruser+"' ")){
-                if(query.next()){
-                    qDebug()<<1;
+
+//                    qDebug()<<1;
                     if(query.exec("select stock from User where account = '"+boruser+"'")){
                         if(query.next()){
-                            qDebug()<<2;
+//                            qDebug()<<2;
                             if(query.value(0).toInt() == 2){
                                 QMessageBox::information(NULL, "提示", "该用户借阅书籍已达上限",
                                                   QMessageBox::Yes);
                             } else {
-                                qDebug()<<3;
+//                                qDebug()<<3;
                                 if(query.exec("update Book set name = '"+bookname+"', public= '"+publicdate+"',input= '"+input+"'"
                                                            ", price= '"+price+"', is_stock = 1, stock_user = '"+boruser+"' where id = '"+id+"' ")
                                         && query.exec("update User set stock = stock+1 where account ='"+boruser+"' ")
@@ -189,11 +191,10 @@ void bookinfo::on_pushButton_clicked()
                         }
                     }
 
-                }else {
-                   QMessageBox::information(NULL, "提示", "用户不存在",
-                                      QMessageBox::Yes);
-                }
-            }
+            }else {
+                QMessageBox::information(NULL, "提示", "用户不存在",
+                                   QMessageBox::Yes);
+             }
         }
     }
 }

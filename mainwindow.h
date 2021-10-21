@@ -14,6 +14,7 @@
 #include <QSqlRecord>
 #include "registerwidget.h"
 #include "clickablelabel.h"
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -76,6 +77,19 @@ private slots:
     void on_del_button_clicked();
 
     void on_del_button_2_clicked();
+
+    void on_aboutAction_triggered();
+
+    void on_importAction_triggered();
+
+    void on_exportAction_triggered();
+
+
+    void on_Mysql_checkBox_stateChanged(int arg1);
+
+    void on_sqlite_checkBox_clicked();
+
+    void on_Mysql_checkBox_clicked();
 
 signals:
     void sendSignal(QString);

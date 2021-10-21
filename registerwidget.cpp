@@ -25,10 +25,12 @@ void registerwidget::receiveSignal(QString signal){
         ui->pushButton->setText("增加");
         ui->label_4->hide();
         ui->lineEdit_4->hide();
+        this->setWindowTitle("增加");
     }else if (signal == "RES") {
         ui->pushButton->setText("注册");
         ui->label_4->show();
         ui->lineEdit_4->show();
+        this->setWindowTitle("注册");
     }else if (signal == "AEDIT") {
         ui->pushButton->setText("修改");
         ui->label->setText("新用户名：");
@@ -36,6 +38,7 @@ void registerwidget::receiveSignal(QString signal){
         ui->label_3->setText("新密码：");
         ui->label_4->hide();
         ui->lineEdit_4->hide();
+        this->setWindowTitle("管理员修改");
         UTYPE = ADMIN;
     }else {
         ui->pushButton->setText("修改");
@@ -46,6 +49,7 @@ void registerwidget::receiveSignal(QString signal){
         ui->label_3->setText("新密码：");
         ui->label_4->show();
         ui->lineEdit_4->show();
+        this->setWindowTitle("用户修改");
         UTYPE = USER;
     }
 }
@@ -75,7 +79,7 @@ void registerwidget::on_pushButton_clicked()
 
         if(name != "" && acc != "" && paw != ""){
 
-            query.exec("select account from user where account = '"+acc+"'");
+            query.exec("select account from User where account = '"+acc+"'");
             if(query.next()){
                 if(query.value(0).toString() == acc){
                     QMessageBox::information(NULL, "提示", "用户已存在",
@@ -135,7 +139,7 @@ void registerwidget::on_pushButton_clicked()
                 ui->lineEdit_4->clear();
             }
 
-            query.exec("select account from user where account = '"+acc+"'");
+            query.exec("select account from User where account = '"+acc+"'");
             if(query.next()){
                 if(query.value(0).toString() == acc){
                     QMessageBox::information(NULL, "提示", "用户已存在",
@@ -176,10 +180,10 @@ void registerwidget::on_pushButton_clicked()
 
         if(name != "" && acc != "" && paw != ""){
 
-            if(query.exec("select account from user where account = '"+acc+"'")){
+            if(query.exec("select account from User where account = '"+acc+"'")){
                 if(query.next()){
 
-                    if(query.exec("update user set name= '"+name+"',account= '"+acc+"',password= '"+paw+"' where account= '"+acc+"' ")){
+                    if(query.exec("update User set name= '"+name+"',account= '"+acc+"',password= '"+paw+"' where account= '"+acc+"' ")){
                          QMessageBox::information(NULL, "提示", "修改成功",
                                                QMessageBox::Yes);
                          state = SUCCESS;
@@ -196,7 +200,7 @@ void registerwidget::on_pushButton_clicked()
         }
 
     } else if (UTYPE == USER) {
-        if(query.exec("select account from user where account = '"+acc+"'")){
+        if(query.exec("select account from User where account = '"+acc+"'")){
             if(name == ""){
                 QMessageBox::information(NULL, "提示", "新用户名不能为空",
                                   QMessageBox::Yes);
@@ -212,7 +216,7 @@ void registerwidget::on_pushButton_clicked()
 
 
                 if(query.next()){
-                         if(query.exec("update user set name= '"+name+"',password= '"+paw+"' where account= '"+acc+"' ")){
+                         if(query.exec("update User set name= '"+name+"',password= '"+paw+"' where account= '"+acc+"' ")){
                              QMessageBox::information(NULL, "提示", "修改成功",
                                                QMessageBox::Yes);
                              state = SUCCESS;
